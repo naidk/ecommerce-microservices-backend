@@ -1,12 +1,13 @@
 # Free Tier Deployment Guide
 
-This guide will help you deploy your E-Commerce API to **Render** (Free Tier) using **Upstash** for Kafka/Redis and **Neon** for PostgreSQL.
+This guide will help you deploy your E-Commerce API to **Render** (Free Tier) using **Aiven** for Kafka, **Upstash** for Redis, and **Neon** for PostgreSQL.
 
 ## Prerequisites
 - [GitHub Account](https://github.com/) (to host your code)
 - [Render Account](https://render.com/)
-- [Upstash Account](https://upstash.com/)
-- [Neon Account](https://neon.tech/)
+- [Upstash Account](https://upstash.com/) (for Redis)
+- [Neon Account](https://neon.tech/) (for Database)
+- [Aiven Account](https://aiven.io/) (for Kafka)
 
 ---
 
@@ -14,7 +15,7 @@ This guide will help you deploy your E-Commerce API to **Render** (Free Tier) us
 Ensure this project is in a GitHub repository.
 ```bash
 git add .
-git commit -m "Prepare for Render deployment"
+git commit -m "Update deployment guide for Aiven"
 git push origin main
 ```
 
@@ -28,26 +29,34 @@ git push origin main
 
 ---
 
-## Step 3: Set up Kafka & Redis (Upstash)
-### Kafka
-1. Log in to [Upstash Console](https://console.upstash.com/).
-2. Create a **Kafka Cluster** (Free Tier).
-3. Go to the **Details** tab and copy:
-   - **Bootstrap Server / Broker Endpoint** (e.g., `finer-gull-1234-us1-kafka.upstash.io:9092`)
-   - **Username** (e.g., `finer-gull-1234`)
-   - **Password**
-   - **SASL Mechanism** (likely `SCRAM-SHA-256`)
+## Step 3: Set up Kafka (Aiven)
+1. Log in to [Aiven Console](https://console.aiven.io/).
+2. Click **Create Service**.
+3. Select **Apache Kafka**.
+4. Important: Select **Free Tier** (available in specific regions, look for the "Free Plan" label).
+5. Give it a name (e.g., `ecommerce-kafka`) and create it.
+6. Once running, go to the **Overview** tab.
+7. **Copy Connection Info:**
+   - **Service URI**: This acts as your Bootstrap Server (copy the host:port part).
+   - **User**: `avnadmin` (default).
+   - **Password**: Copy the password.
+8. **Enable SASL/SCRAM:**
+   - Aiven defaults to SSL certificates sometimes. Ensure you can use **SASL/SCRAM-SHA-256** or **PLAIN**.
+   - If using the "Free Plan", you usually get `SASL_SSL` + `SCRAM-SHA-256` out of the box.
 
-### Redis
-1. Create a **Redis Database** in Upstash.
-2. In the **Details** tab, copy:
+---
+
+## Step 4: Set up Redis (Upstash)
+1. Log in to [Upstash Console](https://console.upstash.com/).
+2. Create a **Redis Database** (Free Tier).
+3. In the **Details** tab, copy:
    - **Endpoint** (Host)
    - **Port** (usually `6379`)
    - **Password**
 
 ---
 
-## Step 4: Deploy to Render
+## Step 5: Deploy to Render
 1. Log in to [Render](https://dashboard.render.com/).
 2. Click **New +** -> **Web Service**.
 3. Connect your **GitHub Repository**.
@@ -61,10 +70,10 @@ git push origin main
 | `DB_URL` | `jdbc:postgresql://ep-xyz.aws.neon.tech/neondb?sslmode=require` |
 | `DB_USER` | (from Neon) |
 | `DB_PASSWORD` | (from Neon) |
-| `KAFKA_BROKER` | `finer-gull-1234-us1-kafka.upstash.io:9092` |
+| `KAFKA_BROKER` | `kafka-123.aivencloud.com:12345` |
 | `KAFKA_SECURITY_PROTOCOL` | `SASL_SSL` |
 | `KAFKA_SASL_MECHANISM` | `SCRAM-SHA-256` |
-| `KAFKA_JAAS_CONFIG` | `org.apache.kafka.common.security.scram.ScramLoginModule required username='<UPSTASH_USER>' password='<UPSTASH_PASS>';` |
+| `KAFKA_JAAS_CONFIG` | `org.apache.kafka.common.security.scram.ScramLoginModule required username='avnadmin' password='<AIVEN_PASSWORD>';` |
 | `REDIS_HOST` | `restless-deer-1234.upstash.io` |
 | `REDIS_PORT` | `6379` |
 | `REDIS_PASSWORD` | `<UPSTASH_REDIS_PASS>` |
@@ -74,7 +83,7 @@ git push origin main
 
 ---
 
-## Step 5: Verify
+## Step 6: Verify
 1. Wait for the build to finish (it might take a few minutes).
 2. Once deployed, Render will verify the service is healthy.
 3. Open the **URL** provided by Render + `/swagger-ui.html` to see your API.
