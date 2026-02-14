@@ -15,4 +15,4 @@ COPY --from=build /app/target/*.jar app.jar
 RUN yum install -y ca-certificates && update-ca-trust
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx350m", "-Xms350m", "-jar", "app.jar"]
