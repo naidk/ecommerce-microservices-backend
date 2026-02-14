@@ -1,0 +1,85 @@
+services:
+  app:
+    build: .
+    container_name: ecommerce_api
+    ports:
+      - "8081:8080"
+    environment:
+      - SERVER_PORT=${PORT:-8080}
+      - DB_URL=${DB_URL:-jdbc:postgresql://postgres:5432/ecommerce}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - KAFKA_BROKER=${KAFKA_BROKER:-kafka:9092}
+      - KAFKA_SECURITY_PROTOCOL=${KAFKA_SECURITY_PROTOCOL:-PLAINTEXT}
+      - KAFKA_SASL_MECHANISM=${KAFKA_SASL_MECHANISM:-PLAIN}
+      - KAFKA_JAAS_CONFIG=${KAFKA_JAAS_CONFIG:-}
+      - PAYMENT_API_URL=${PAYMENT_API_URL:-https://echo.zuplo.io}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_SSL_ENABLED=${REDIS_SSL_ENABLED:-false}
+    depends_on:
+      - postgres
+      - kafka
+      - redis
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecommerce
+    ports:
+      - "5433:5432"
+    networks:
+      - app-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6380:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis_data:/data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2182:2181"
+    networks:
+      - app-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9093:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

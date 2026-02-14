@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: ecommerce-api
+    runtime: docker
+    region: oregon
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: KAFKA_BROKER
+        sync: false
+      - key: KAFKA_SECURITY_PROTOCOL
+        value: SASL_SSL
+      - key: KAFKA_SASL_MECHANISM
+        value: SCRAM-SHA-256
+      - key: KAFKA_JAAS_CONFIG
+        sync: false
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: 6379
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_SSL_ENABLED
+        value: true
