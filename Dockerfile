@@ -11,11 +11,11 @@ FROM amazoncorretto:17
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Install openssl and ca-certificates
-RUN yum install -y openssl ca-certificates
+# Copy and trust the provided Aiven CA certificate
+COPY aiven-ca.crt /etc/pki/ca-trust/source/anchors/aiven-ca.crt
 
-# Manually trust Aiven Kafka certificate (fixes PKIX path building failed)
-RUN openssl s_client -showcerts -connect kafka-3805ed0c-naidugudivada768-bb80.b.aivencloud.com:10560 -servername kafka-3805ed0c-naidugudivada768-bb80.b.aivencloud.com </dev/null 2>/dev/null | openssl x509 -outform PEM > /etc/pki/ca-trust/source/anchors/aiven.pem && update-ca-trust
+# Install ca-certificates and update trust store
+RUN yum install -y ca-certificates && update-ca-trust
 
 EXPOSE 8080
 # Optimize memory: 380MB Heap + SerialGC (lower overhead)
