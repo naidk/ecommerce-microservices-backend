@@ -6,17 +6,11 @@ RUN mvn dependency:go-offline
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Use Amazon Corretto 17 for runtime
-FROM amazoncorretto:17
+# Use Eclipse Temurin for runtime (Contains standard Root CAs for Aiven)
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
-# Copy and trust the provided Aiven CA certificate
-COPY aiven-ca.crt /etc/pki/ca-trust/source/anchors/aiven-ca.crt
-
-# Install ca-certificates and update trust store
-RUN yum install -y ca-certificates && update-ca-trust
-
 EXPOSE 8080
-# Optimize memory: 380MB Heap + SerialGC (lower overhead)
-ENTRYPOINT ["java", "-Xmx380m", "-Xms380m", "-XX:+UseSerialGC", "-jar", "app.jar"]
+# Optimize memory: 340MB Heap to leave room for Native Memory (512MB Total Limit)
+ENTRYPOINT ["java", "-Xmx340m", "-Xms340m", "-XX:+UseSerialGC", "-jar", "app.jar"]
