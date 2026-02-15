@@ -21,7 +21,7 @@ public class OrderConsumer {
     private final ShoppingCartService shoppingCartService;
 
     @Transactional
-    @KafkaListener(topics = CLEAR_CART_TOPIC, groupId = GROUP_ID)
+    // @KafkaListener(topics = CLEAR_CART_TOPIC, groupId = GROUP_ID)
     public void consumeClearCartRequest(String customerId) {
         log.info("Received clear cart request for Customer ID: [{}]", customerId);
 
