@@ -13,13 +13,15 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class NotificationConsumer {
 
-    @KafkaListener(topics = KafkaConstants.CUSTOMER_topic, groupId = "${spring.kafka.consumer.group-id}")
+    // @KafkaListener(topics = KafkaConstants.CUSTOMER_topic, groupId =
+    // "${spring.kafka.consumer.group-id}")
     public void handleCustomerRegistered(CustomerRegisteredEvent event) {
         log.info("NOTIFICATION SERVICE: Welcome email sent to {} for Customer ID: {}", event.getEmail(),
                 event.getCustomerId());
     }
 
-    @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
+    // @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId =
+    // "${spring.kafka.consumer.group-id}")
     public void handleProductEvents(Object event) {
         if (event instanceof ProductCreatedEvent productEvent) {
             log.info("NOTIFICATION SERVICE: New product alert! {} (SKU: {}) available for ${}", productEvent.getName(),
@@ -32,7 +34,8 @@ public class NotificationConsumer {
         }
     }
 
-    @KafkaListener(topics = KafkaConstants.ORDER_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
+    // @KafkaListener(topics = KafkaConstants.ORDER_TOPIC, groupId =
+    // "${spring.kafka.consumer.group-id}")
     public void handleOrderCreated(OrderCreatedEvent event) {
         log.info("NOTIFICATION SERVICE: Order Confirmation sent for Order ID: {}. Total: {}", event.getOrderId(),
                 event.getTotalAmount());
