@@ -17,7 +17,7 @@ public class PaymentConsumer {
 
     private final OrderService orderService;
 
-    @KafkaListener(topics = PAYMENT_RESPONSE_TOPIC, groupId = GROUP_ID)
+    // @KafkaListener(topics = PAYMENT_RESPONSE_TOPIC, groupId = GROUP_ID)
     public void consumePaymentResponse(String orderId) {
         log.info("Received payment confirmation event from Kafka for Order ID: [{}]", orderId);
         orderService.updateStatus(orderId, OrderStatusEnum.PAID);
