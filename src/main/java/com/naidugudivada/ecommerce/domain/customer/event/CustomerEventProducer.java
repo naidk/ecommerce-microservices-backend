@@ -15,6 +15,11 @@ public class CustomerEventProducer {
 
     public void publishCustomerRegistered(CustomerRegisteredEvent event) {
         log.info("Publishing CustomerRegisteredEvent: {}", event.getEventId());
-        kafkaTemplate.send(KafkaConstants.CUSTOMER_topic, event.getCustomerId().toString(), event);
+        try {
+            kafkaTemplate.send(KafkaConstants.CUSTOMER_topic, event.getCustomerId().toString(), event);
+        } catch (Exception e) {
+            log.error("Failed to publish CustomerRegisteredEvent to Kafka. Continuing without event. Error: {}",
+                    e.getMessage());
+        }
     }
 }
