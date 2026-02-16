@@ -4,11 +4,8 @@ import com.naidugudivada.ecommerce.domain.order.OrderService;
 import com.naidugudivada.ecommerce.domain.order.OrderStatusEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
 
-import static com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants.GROUP_ID;
-import static com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants.PAYMENT_RESPONSE_TOPIC;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

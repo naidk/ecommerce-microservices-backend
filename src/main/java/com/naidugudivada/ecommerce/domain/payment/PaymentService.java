@@ -31,7 +31,7 @@ public class PaymentService {
         this.orderService = orderService;
     }
 
-    @KafkaListener(topics = PAYMENT_TOPIC, groupId = GROUP_ID)
+    // @KafkaListener(topics = PAYMENT_TOPIC, groupId = GROUP_ID)
     public void processPayment(String orderId) {
         log.info("Received payment processing event for Order ID: [{}]", orderId);
 

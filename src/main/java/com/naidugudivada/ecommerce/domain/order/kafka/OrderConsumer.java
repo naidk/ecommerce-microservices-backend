@@ -3,15 +3,12 @@ package com.naidugudivada.ecommerce.domain.order.kafka;
 import com.naidugudivada.ecommerce.domain.shoppingcart.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-
-import static com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants.CLEAR_CART_TOPIC;
-import static com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants.GROUP_ID;
 
 @Service
 @RequiredArgsConstructor
