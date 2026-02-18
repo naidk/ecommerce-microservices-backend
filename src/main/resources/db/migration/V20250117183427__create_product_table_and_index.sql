@@ -1,4 +1,4 @@
-CREATE TABLE product (
+CREATE TABLE IF NOT EXISTS product (
     id UUID PRIMARY KEY,
     sku VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -10,4 +10,4 @@ CREATE TABLE product (
     active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE INDEX idx_product_sku ON product (sku);
+CREATE INDEX IF NOT EXISTS idx_product_sku ON product (sku);
