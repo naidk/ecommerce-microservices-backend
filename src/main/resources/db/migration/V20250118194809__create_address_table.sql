@@ -12,7 +12,12 @@ CREATE TABLE IF NOT EXISTS address (
     customer UUID NOT NULL
 );
 
-ALTER TABLE address
-ADD CONSTRAINT fk_customer
-FOREIGN KEY (customer) REFERENCES customer (id)
-ON DELETE CASCADE;
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_customer') THEN
+        ALTER TABLE address
+        ADD CONSTRAINT fk_customer
+        FOREIGN KEY (customer) REFERENCES customer (id)
+        ON DELETE CASCADE;
+    END IF;
+END $$;
