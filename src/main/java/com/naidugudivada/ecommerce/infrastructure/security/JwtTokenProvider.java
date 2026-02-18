@@ -10,13 +10,25 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.function.Function;
 
 @Component
 public class JwtTokenProvider {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generated secure key
-    private final long jwtExpirationInMs = 3600000; // 1 hour
+    @Value("${jwt.secret:MySuperSecretKeyForJwtSigningShouldBeLongEnough1234567890}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration:3600000}")
+    private long jwtExpirationInMs;
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
 
     public String generateToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
