@@ -11,9 +11,19 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AccountStatusException;
+
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler({ BadCredentialsException.class, AccountStatusException.class })
+    public ResponseEntity<Object> handleAuthenticationException(Exception ex, WebRequest request) {
+        logException(ex);
+        return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(), request);
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
@@ -38,8 +48,7 @@ public class GlobalExceptionHandler {
                 "status", code,
                 "error", reason,
                 "message", message,
-                "path", request.getDescription(false).replace("uri=", "")
-        );
+                "path", request.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.valueOf(code));
     }
 }
