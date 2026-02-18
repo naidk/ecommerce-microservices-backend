@@ -14,12 +14,21 @@ public class OrderEventProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void publishOrderCreated(OrderCreatedEvent event) {
-        log.info("Publishing OrderCreatedEvent: {}", event.getEventId());
-        kafkaTemplate.send(KafkaConstants.ORDER_TOPIC, event.getOrderId().toString(), event);
+        try {
+            log.info("Publishing OrderCreatedEvent: {}", event.getEventId());
+            kafkaTemplate.send(KafkaConstants.ORDER_TOPIC, event.getOrderId().toString(), event);
+        } catch (Exception e) {
+            log.error("Failed to publish OrderCreatedEvent for orderId: {}. Error: {}", event.getOrderId(),
+                    e.getMessage());
+        }
     }
 
     public void publishClearCart(String customerId) {
-        log.info("Publishing Clear Cart Event for Customer: {}", customerId);
-        kafkaTemplate.send(KafkaConstants.CLEAR_CART_TOPIC, customerId, customerId);
+        try {
+            log.info("Publishing Clear Cart Event for Customer: {}", customerId);
+            kafkaTemplate.send(KafkaConstants.CLEAR_CART_TOPIC, customerId, customerId);
+        } catch (Exception e) {
+            log.error("Failed to publish Clear Cart Event for customerId: {}. Error: {}", customerId, e.getMessage());
+        }
     }
 }
