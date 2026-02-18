@@ -14,12 +14,22 @@ public class ProductEventProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void publishProductCreated(ProductCreatedEvent event) {
-        log.info("Publishing ProductCreatedEvent: {}", event.getEventId());
-        kafkaTemplate.send(KafkaConstants.PRODUCT_TOPIC, event.getProductId().toString(), event);
+        try {
+            log.info("Publishing ProductCreatedEvent: {}", event.getEventId());
+            kafkaTemplate.send(KafkaConstants.PRODUCT_TOPIC, event.getProductId().toString(), event);
+        } catch (Exception e) {
+            log.error("Failed to publish ProductCreatedEvent for productId: {}. Error: {}", event.getProductId(),
+                    e.getMessage());
+        }
     }
 
     public void publishStockUpdated(StockUpdatedEvent event) {
-        log.info("Publishing StockUpdatedEvent: {}", event.getEventId());
-        kafkaTemplate.send(KafkaConstants.PRODUCT_TOPIC, event.getProductId().toString(), event);
+        try {
+            log.info("Publishing StockUpdatedEvent: {}", event.getEventId());
+            kafkaTemplate.send(KafkaConstants.PRODUCT_TOPIC, event.getProductId().toString(), event);
+        } catch (Exception e) {
+            log.error("Failed to publish StockUpdatedEvent for productId: {}. Error: {}", event.getProductId(),
+                    e.getMessage());
+        }
     }
 }
