@@ -1,4 +1,4 @@
-CREATE TABLE order_address (
+CREATE TABLE IF NOT EXISTS order_address (
     id UUID PRIMARY KEY,
     street VARCHAR(255) NOT NULL,
     number VARCHAR(255) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE order_address (
     additional_info VARCHAR(255)
 );
 
-CREATE TABLE order_table (
+CREATE TABLE IF NOT EXISTS order_table (
     id UUID PRIMARY KEY,
     customer UUID NOT NULL,
     order_address UUID NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE order_table (
     FOREIGN KEY (order_address) REFERENCES order_address (id)
 );
 
-CREATE TABLE order_item (
+CREATE TABLE IF NOT EXISTS order_item (
     id UUID PRIMARY KEY,
     order_table UUID NOT NULL,
     product UUID NOT NULL,
