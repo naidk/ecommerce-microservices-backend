@@ -48,5 +48,6 @@ jobs:
         application_name: ecommerce-api
         environment_name: ecommerce-api-env
         version_label: ${{ github.sha }}
+        use_existing_version_if_available: true
         region: us-east-1
         deployment_package: deploy.zip
