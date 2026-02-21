@@ -1,0 +1,20 @@
+-- Ensure all tables have proper defaults for created_at and updated_at
+-- This fixes issues where columns might have been created without defaults in previous manual/failed migrations
+
+ALTER TABLE product ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE product ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE customer ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE customer ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE address ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE address ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE order_table ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE order_table ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE order_item ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE order_item ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE product_event ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE product_event ALTER COLUMN updated_at SET DEFAULT CURRENT_TIMESTAMP;
