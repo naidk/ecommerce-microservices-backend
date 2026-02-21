@@ -41,9 +41,11 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getStockQuantity(),
                 product.getInstallments(),
+                product.getAverageRating(),
+                product.getTotalReviews(),
+                product.getImageUrl(),
                 LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
     }
 
     public static ProductRequestDTO createProductRequestDTO() {
@@ -57,8 +59,8 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getInstallments(),
                 product.getStockQuantity(),
-                product.getActive()
-        );
+                product.getActive(),
+                product.getImageUrl());
     }
 
     public static ProductRequestDTO createProductWithNewSku() {
@@ -72,8 +74,8 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getInstallments(),
                 product.getStockQuantity(),
-                product.getActive()
-        );
+                product.getActive(),
+                product.getImageUrl());
     }
 
     public static ProductRequestDTO createInvalidProductRequestDTO() {
@@ -87,7 +89,7 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getInstallments(),
                 product.getStockQuantity(),
-                product.getActive()
-        );
+                product.getActive(),
+                product.getImageUrl());
     }
 }

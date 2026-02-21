@@ -21,4 +21,7 @@ public class ErrorMessages {
     public static final String ORDER_STATUS_MUST_BE_PENDING = "The order status must be PENDING.";
 
     public static final String EMAIL_ALREADY_EXISTS = "Email %s already exists.";
+
+    public static final String REVIEW_ALREADY_EXISTS = "You have already reviewed this product.";
+    public static final String REVIEW_NOT_FOUND = "Review with id %s not found.";
 }

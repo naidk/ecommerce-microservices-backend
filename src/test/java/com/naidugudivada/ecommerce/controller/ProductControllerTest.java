@@ -167,4 +167,19 @@ class ProductControllerTest {
         mockMvc.perform(delete("/api/product/{id}", ID))
                 .andExpect(status().isNoContent());
     }
+
+    @Test
+    @DisplayName("POST /api/product/{id}/image should return 200 OK")
+    void uploadImageShouldReturnOk() throws Exception {
+        // Arrange
+        org.springframework.mock.web.MockMultipartFile file = new org.springframework.mock.web.MockMultipartFile("file",
+                "image.png", MediaType.IMAGE_PNG_VALUE, "image data".getBytes());
+        when(productService.uploadImage(eq(ID), any())).thenReturn(productResponseDTO);
+
+        // Act & Assert
+        mockMvc.perform(multipart("/api/product/{id}/image", ID).file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(productResponseDTO.id().toString())));
+    }
 }

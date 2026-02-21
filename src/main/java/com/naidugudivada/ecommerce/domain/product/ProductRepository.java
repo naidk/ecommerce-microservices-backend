@@ -13,13 +13,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
+public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
     Page<ProductEntity> findAllByActiveTrue(Pageable pageable);
 
     Optional<ProductEntity> findByIdAndActiveTrue(UUID id);
 
     @Query("SELECT p FROM Product p WHERE p.category = :category AND p.active = true")
-    Page<ProductEntity> findAllByCategoryIgnoreCaseAndActiveTrue(@Param("category") ProductCategoryEnum category, Pageable pageable);
+    Page<ProductEntity> findAllByCategoryIgnoreCaseAndActiveTrue(@Param("category") ProductCategoryEnum category,
+            Pageable pageable);
 
     Page<ProductEntity> findAllByLabelIgnoreCaseAndActiveTrue(String label, Pageable pageable);
 

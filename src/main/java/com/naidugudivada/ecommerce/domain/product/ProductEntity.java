@@ -25,23 +25,23 @@ import java.math.BigDecimal;
 public class ProductEntity extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String sku;
-    
+
     @Column(nullable = false)
     private String name;
-    
+
     @Column(nullable = false)
     private String label;
-    
+
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private ProductCategoryEnum category;
-    
+
     @Column(nullable = false)
     private BigDecimal price;
-    
+
     @Column(nullable = false)
     private BigDecimal discount;
-    
+
     @Column(nullable = false)
     private Integer installments;
 
@@ -51,4 +51,15 @@ public class ProductEntity extends BaseEntity {
     @Column(nullable = false)
     @ColumnDefault("true")
     private Boolean active;
+
+    @Column(nullable = false)
+    @ColumnDefault("0.0")
+    private Double averageRating = 0.0;
+
+    @Column(nullable = false)
+    @ColumnDefault("0")
+    private Integer totalReviews = 0;
+
+    @Column
+    private String imageUrl;
 }

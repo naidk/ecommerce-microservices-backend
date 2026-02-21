@@ -14,6 +14,9 @@ public record ProductResponseDTO(UUID id,
                 BigDecimal discount,
                 Integer stockQuantity,
                 Integer installments,
+                Double averageRating,
+                Integer totalReviews,
+                String imageUrl,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt) implements Serializable {
 }

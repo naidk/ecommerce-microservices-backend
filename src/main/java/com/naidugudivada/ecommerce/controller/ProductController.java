@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import java.util.UUID;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,13 +44,13 @@ public class ProductController {
 
     @GetMapping("/category/{category}")
     public ResponseEntity<Page<ProductResponseDTO>> findByCategory(@PathVariable("category") String category,
-                                                                   Pageable pageable) {
+            Pageable pageable) {
         return ResponseEntity.ok(productService.findAllByCategory(category, pageable));
     }
 
     @GetMapping("/label/{label}")
     public ResponseEntity<Page<ProductResponseDTO>> findByLabel(@PathVariable("label") String label,
-                                                                Pageable pageable) {
+            Pageable pageable) {
         return ResponseEntity.ok(productService.findAllByLabel(label, pageable));
     }
 
@@ -63,13 +66,13 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateById(@PathVariable UUID id,
-                                                         @Valid @RequestBody ProductRequestDTO product) {
+            @Valid @RequestBody ProductRequestDTO product) {
         return ResponseEntity.ok(productService.updateById(id, product));
     }
 
     @PatchMapping("/stock/{id}/{quantity}")
     public ResponseEntity<ProductResponseDTO> addStockById(@PathVariable UUID id,
-                                                           @PathVariable Integer quantity) {
+            @PathVariable Integer quantity) {
         return ResponseEntity.ok(productService.addStockById(id, quantity));
     }
 
@@ -77,5 +80,11 @@ public class ProductController {
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
         productService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductResponseDTO> uploadImage(@PathVariable UUID id, @RequestBody MultipartFile file)
+            throws IOException {
+        return ResponseEntity.ok(productService.uploadImage(id, file));
     }
 }

@@ -23,6 +23,10 @@ import static com.naidugudivada.ecommerce.infrastructure.constants.ErrorMessages
 import static com.naidugudivada.ecommerce.infrastructure.constants.ErrorMessages.PRODUCT_NOT_FOUND_WITH_ID;
 import static com.naidugudivada.ecommerce.infrastructure.constants.ErrorMessages.SKU_ALREADY_EXISTS;
 
+import com.naidugudivada.ecommerce.service.AwsS3Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+
 @Service
 @AllArgsConstructor
 public class ProductService {
@@ -30,6 +34,16 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final ProductEventProducer productEventProducer;
+    private final AwsS3Service awsS3Service;
+
+    @Transactional
+    @CacheEvict(value = "products", key = "#id")
+    public ProductResponseDTO uploadImage(UUID id, MultipartFile file) throws IOException {
+        ProductEntity product = getEntity(id);
+        String imageUrl = awsS3Service.uploadFile(file, "products/" + id.toString());
+        product.setImageUrl(imageUrl);
+        return productMapper.toResponseDTO(productRepository.save(product));
+    }
 
     @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "#pageable.pageNumber + '-' + #pageable.pageSize")

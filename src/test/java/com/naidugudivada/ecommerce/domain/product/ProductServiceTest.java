@@ -49,6 +49,9 @@ class ProductServiceTest {
     private ProductEventProducer productEventProducer;
 
     @Mock
+    private com.naidugudivada.ecommerce.service.AwsS3Service awsS3Service;
+
+    @Mock
     private Pageable pageable;
 
     @InjectMocks
@@ -289,5 +292,27 @@ class ProductServiceTest {
         assertThat(productEntity.getStockQuantity()).isEqualTo(2);
         verify(productRepository).save(productEntity);
         verify(productEventProducer).publishStockUpdated(any(StockUpdatedEvent.class));
+    }
+
+    @Test
+    void testUploadImage() throws java.io.IOException {
+        // arrange
+        org.springframework.web.multipart.MultipartFile mockFile = org.mockito.Mockito
+                .mock(org.springframework.web.multipart.MultipartFile.class);
+        String expectedUrl = "https://bucket.s3.region.amazonaws.com/folder/image.png";
+
+        when(productRepository.findByIdAndActiveTrue(ID)).thenReturn(Optional.of(productEntity));
+        when(awsS3Service.uploadFile(any(), any())).thenReturn(expectedUrl);
+        when(productRepository.save(any(ProductEntity.class))).thenReturn(productEntity);
+        when(productMapper.toResponseDTO(any(ProductEntity.class))).thenReturn(productResponseDTO);
+
+        // act
+        var response = productService.uploadImage(ID, mockFile);
+
+        // assert
+        assertThat(response).isNotNull().isEqualTo(productResponseDTO);
+        assertThat(productEntity.getImageUrl()).isEqualTo(expectedUrl);
+        verify(awsS3Service).uploadFile(any(), any());
+        verify(productRepository).save(productEntity);
     }
 }

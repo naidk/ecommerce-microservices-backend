@@ -10,27 +10,14 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
-public record ProductRequestDTO(@NotBlank
-                                String sku,
-                                @NotBlank
-                                String name,
-                                @NotBlank
-                                String label,
-                                @NotNull
-                                String category,
-                                @NotNull
-                                @Positive
-                                BigDecimal price,
-                                @NotNull
-                                @DecimalMin("0.0")
-                                @DecimalMax("100.0")
-                                BigDecimal discount,
-                                @NotNull
-                                @Positive
-                                @Max(20)
-                                Integer installments,
-                                @PositiveOrZero
-                                Integer stockQuantity,
-                                Boolean active
-) {
+public record ProductRequestDTO(@NotBlank String sku,
+        @NotBlank String name,
+        @NotBlank String label,
+        @NotNull String category,
+        @NotNull @Positive BigDecimal price,
+        @NotNull @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal discount,
+        @NotNull @Positive @Max(20) Integer installments,
+        @PositiveOrZero Integer stockQuantity,
+        Boolean active,
+        String imageUrl) {
 }
