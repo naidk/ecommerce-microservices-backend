@@ -10,6 +10,7 @@ import com.naidugudivada.ecommerce.domain.customer.dto.CustomerResponseDTO;
 import com.naidugudivada.ecommerce.infrastructure.exceptions.DuplicateEmailException;
 import com.naidugudivada.ecommerce.infrastructure.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,7 @@ import static com.naidugudivada.ecommerce.infrastructure.constants.ErrorMessages
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -42,7 +44,7 @@ public class AuthService {
 
     @Transactional
     public CustomerResponseDTO register(CustomerRequestDTO customerDTO) {
-        log.info("Starting registration for email: {}", customerDTO.email());
+        log.info("Starting registration process for user with email: {} [DIAGNOSTIC_V3]", customerDTO.email());
         if (customerRepository.existsByEmailIgnoreCase(customerDTO.email())) {
             throw new DuplicateEmailException(EMAIL_ALREADY_EXISTS);
         }
