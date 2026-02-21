@@ -182,4 +182,24 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(productResponseDTO.id().toString())));
     }
+
+    @Test
+    @DisplayName("POST /api/product should return 403 Forbidden for ROLE_USER")
+    @WithMockUser(username = "user", roles = { "USER" })
+    void createProductShouldReturnForbiddenForUserRole() throws Exception {
+        // Act & Assert
+        mockMvc.perform(post("/api/product")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productRequestDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/product/{id} should return 403 Forbidden for ROLE_USER")
+    @WithMockUser(username = "user", roles = { "USER" })
+    void deleteProductShouldReturnForbiddenForUserRole() throws Exception {
+        // Act & Assert
+        mockMvc.perform(delete("/api/product/{id}", ID))
+                .andExpect(status().isForbidden());
+    }
 }

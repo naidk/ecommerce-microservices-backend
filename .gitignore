@@ -36,3 +36,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Custom Ignores ###
+*.log
+*.txt
+*.json
+eblogs*
+!**/pom.xml
+!**/composer.json
+!**/package.json
+!**/tsconfig.json

@@ -16,6 +16,7 @@ interface ShoppingCartMapper {
 
     @Mapping(target = "shoppingCartId", source = "id")
     @Mapping(target = "customerId", source = "customer.id")
+    @Mapping(target = "appliedPromotionCode", source = "appliedPromotion.code")
     ShoppingCartResponseDTO toResponseDTO(ShoppingCartEntity entity);
 
     @Mapping(target = "productId", source = "product.id")

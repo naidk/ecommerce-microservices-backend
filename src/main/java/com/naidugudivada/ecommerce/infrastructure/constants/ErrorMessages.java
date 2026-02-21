@@ -24,4 +24,8 @@ public class ErrorMessages {
 
     public static final String REVIEW_ALREADY_EXISTS = "You have already reviewed this product.";
     public static final String REVIEW_NOT_FOUND = "Review with id %s not found.";
+
+    public static final String VENDOR_ALREADY_EXISTS_WITH_NAME = "A vendor with the company name %s already exists.";
+    public static final String VENDOR_TAX_ID_ALREADY_EXISTS = "A vendor with the tax ID %s already exists.";
+    public static final String VENDOR_NOT_FOUND_WITH_ID = "Vendor with id %s not found.";
 }
