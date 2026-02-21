@@ -83,7 +83,8 @@ public class ProductController {
     }
 
     @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductResponseDTO> uploadImage(@PathVariable UUID id, @RequestBody MultipartFile file)
+    public ResponseEntity<ProductResponseDTO> uploadImage(@PathVariable UUID id,
+            @RequestPart("file") MultipartFile file)
             throws IOException {
         return ResponseEntity.ok(productService.uploadImage(id, file));
     }
