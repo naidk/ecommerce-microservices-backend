@@ -18,8 +18,7 @@ public class NotificationConsumer {
 
     private final AwsSesService awsSesService;
 
-    // @KafkaListener(topics = KafkaConstants.CUSTOMER_topic, groupId =
-    // "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = KafkaConstants.CUSTOMER_topic, groupId = "${spring.kafka.consumer.group-id}")
     public void handleCustomerRegistered(CustomerRegisteredEvent event) {
         log.info("NOTIFICATION SERVICE: Welcome email processing for {} (Customer ID: {})", event.getEmail(),
                 event.getCustomerId());
@@ -29,8 +28,7 @@ public class NotificationConsumer {
         awsSesService.sendEmail(event.getEmail(), subject, body);
     }
 
-    // @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId =
-    // "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
     public void handleProductEvents(Object event) {
         if (event instanceof ProductCreatedEvent productEvent) {
             log.info("NOTIFICATION SERVICE: New product alert! {} (SKU: {}) available for ${}", productEvent.getName(),
@@ -43,8 +41,7 @@ public class NotificationConsumer {
         }
     }
 
-    // @KafkaListener(topics = KafkaConstants.ORDER_TOPIC, groupId =
-    // "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = KafkaConstants.ORDER_TOPIC, groupId = "${spring.kafka.consumer.group-id}")
     public void handleOrderCreated(OrderCreatedEvent event) {
         log.info("NOTIFICATION SERVICE: Order Confirmation processing for Order ID: {}. Total: {}", event.getOrderId(),
                 event.getTotalAmount());

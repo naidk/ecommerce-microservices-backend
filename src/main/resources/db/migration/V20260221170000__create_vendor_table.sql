@@ -1,0 +1,9 @@
+CREATE TABLE vendor (
+    id UUID PRIMARY KEY,
+    company_name VARCHAR(255) NOT NULL UNIQUE,
+    tax_id VARCHAR(100) NOT NULL UNIQUE,
+    contact_email VARCHAR(255) NOT NULL,
+    approval_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);

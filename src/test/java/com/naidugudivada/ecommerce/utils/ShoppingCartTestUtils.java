@@ -34,15 +34,13 @@ public class ShoppingCartTestUtils {
     public static ShoppingCartRequestDTO createShoppingCartRequestDTO() {
         return new ShoppingCartRequestDTO(
                 ID,
-                5
-        );
+                5);
     }
 
     public static ShoppingCartRequestDTO createShoppingCartRequestDTOWithInvalidQuantity() {
         return new ShoppingCartRequestDTO(
                 ID,
-                15
-        );
+                15);
     }
 
     public static ShoppingCartResponseDTO createShoppingCartResponseDTO() {
@@ -51,9 +49,10 @@ public class ShoppingCartTestUtils {
                 ID,
                 List.of(createShoppingCartItemResponseDTO()),
                 BigDecimal.valueOf(10.99),
+                null,
+                BigDecimal.ZERO,
                 LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
     }
 
     public static ShoppingCartItemEntity createShoppingCartItemEntity() {
@@ -74,7 +73,6 @@ public class ShoppingCartTestUtils {
                 BigDecimal.valueOf(10.99),
                 BigDecimal.valueOf(10.99),
                 LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
     }
 }

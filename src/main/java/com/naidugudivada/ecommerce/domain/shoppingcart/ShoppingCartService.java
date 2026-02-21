@@ -36,6 +36,7 @@ public class ShoppingCartService {
     private final ShoppingCartItemService shoppingCartItemService;
     private final ProductService productService;
     private final CustomerRepository customerRepository;
+    private final com.naidugudivada.ecommerce.domain.promotion.PromotionService promotionService;
     private final ShoppingCartMapper mapper;
 
     @Transactional
@@ -113,6 +114,31 @@ public class ShoppingCartService {
         return mapper.toResponseDTO(cart);
     }
 
+    @Transactional
+    public ShoppingCartResponseDTO applyPromotion(UUID customerId, String code) {
+        log.info("Customer [{}] applying promotion [{}]", customerId, code);
+        var cart = findByCustomerId(customerId);
+        var promotion = promotionService.validateAndGetPromotion(code);
+
+        cart.setAppliedPromotion(promotion);
+        updateTotalPrice(cart);
+        shoppingCartRepository.save(cart);
+
+        return mapper.toResponseDTO(cart);
+    }
+
+    @Transactional
+    public ShoppingCartResponseDTO removePromotion(UUID customerId) {
+        log.info("Customer [{}] removing applied promotion", customerId);
+        var cart = findByCustomerId(customerId);
+
+        cart.setAppliedPromotion(null);
+        updateTotalPrice(cart);
+        shoppingCartRepository.save(cart);
+
+        return mapper.toResponseDTO(cart);
+    }
+
     @Transactional(readOnly = true)
     public ShoppingCartResponseDTO getShoppingCartByCustomerId(UUID customerId) {
         return mapper.toResponseDTO(findByCustomerId(customerId));
@@ -152,9 +178,35 @@ public class ShoppingCartService {
     }
 
     private void updateTotalPrice(ShoppingCartEntity cart) {
-        var totalPrice = cart.getItems().stream()
+        var subtotal = cart.getItems().stream()
                 .map(item -> item.getPriceAtAddedTime().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        cart.setTotalPrice(totalPrice);
+
+        var discountAmount = BigDecimal.ZERO;
+
+        if (cart.getAppliedPromotion() != null) {
+            var promo = cart.getAppliedPromotion();
+            if (promo.isValid()) {
+                if (promo
+                        .getDiscountType() == com.naidugudivada.ecommerce.domain.promotion.DiscountTypeEnum.PERCENTAGE) {
+                    // e.g., 20% off -> subtotal * 0.20
+                    discountAmount = subtotal.multiply(promo.getDiscountValue().divide(BigDecimal.valueOf(100)));
+                } else {
+                    // Fixed amount off
+                    discountAmount = promo.getDiscountValue();
+                }
+            } else {
+                // If the promo became invalid (expired, deactivated), remove it
+                cart.setAppliedPromotion(null);
+            }
+        }
+
+        // Ensure discount doesn't exceed subtotal
+        if (discountAmount.compareTo(subtotal) > 0) {
+            discountAmount = subtotal;
+        }
+
+        cart.setDiscountAmount(discountAmount);
+        cart.setTotalPrice(subtotal.subtract(discountAmount));
     }
 }

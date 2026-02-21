@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,13 @@ public class ShoppingCartEntity extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShoppingCartItemEntity> items = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "promotion_id")
+    private com.naidugudivada.ecommerce.domain.promotion.PromotionEntity appliedPromotion;
+
+    @Builder.Default
+    private BigDecimal discountAmount = BigDecimal.ZERO;
 
     private BigDecimal totalPrice;
 }

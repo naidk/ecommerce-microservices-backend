@@ -30,13 +30,24 @@ public class ShoppingCartController {
 
     @PostMapping("/{customerId}")
     public ResponseEntity<ShoppingCartResponseDTO> addToCart(@PathVariable UUID customerId,
-                                                             @Valid @RequestBody ShoppingCartRequestDTO request) {
+            @Valid @RequestBody ShoppingCartRequestDTO request) {
         return ResponseEntity.ok(shoppingCartService.addToCart(customerId, request));
     }
 
     @DeleteMapping("/{customerId}")
     public ResponseEntity<ShoppingCartResponseDTO> removeFromCart(@PathVariable UUID customerId,
-                                                                  @Valid @RequestBody ShoppingCartRequestDTO request) {
+            @Valid @RequestBody ShoppingCartRequestDTO request) {
         return ResponseEntity.ok(shoppingCartService.removeFromCart(customerId, request));
+    }
+
+    @PostMapping("/{customerId}/promotion/{code}")
+    public ResponseEntity<ShoppingCartResponseDTO> applyPromotion(@PathVariable UUID customerId,
+            @PathVariable String code) {
+        return ResponseEntity.ok(shoppingCartService.applyPromotion(customerId, code));
+    }
+
+    @DeleteMapping("/{customerId}/promotion")
+    public ResponseEntity<ShoppingCartResponseDTO> removePromotion(@PathVariable UUID customerId) {
+        return ResponseEntity.ok(shoppingCartService.removePromotion(customerId));
     }
 }

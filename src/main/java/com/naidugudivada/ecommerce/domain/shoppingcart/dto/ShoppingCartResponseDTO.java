@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.UUID;
 
 public record ShoppingCartResponseDTO(
-        UUID shoppingCartId,
-        UUID customerId,
-        List<ShoppingCartItemResponseDTO> items,
-        BigDecimal totalPrice,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {}
+                UUID shoppingCartId,
+                UUID customerId,
+                List<ShoppingCartItemResponseDTO> items,
+                BigDecimal totalPrice,
+                String appliedPromotionCode,
+                BigDecimal discountAmount,
+                LocalDateTime createdAt,
+                LocalDateTime updatedAt) {
+}

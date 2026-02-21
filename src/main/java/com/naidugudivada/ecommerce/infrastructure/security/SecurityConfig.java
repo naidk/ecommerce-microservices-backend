@@ -33,6 +33,18 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/product/**").permitAll() // Allow viewing products
+                        .requestMatchers(HttpMethod.POST, "/api/product/**").hasAnyRole("ADMIN", "VENDOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/product/**").hasAnyRole("ADMIN", "VENDOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/product/**").hasAnyRole("ADMIN", "VENDOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/product/**").hasAnyRole("ADMIN", "VENDOR")
+                        .requestMatchers("/api/vendor/register").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/vendor/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/vendor/**").permitAll()
+                        .requestMatchers("/api/search/**").permitAll()
+                        .requestMatchers("/api/wishlist/**").authenticated()
+                        .requestMatchers("/api/payment/webhook/**").permitAll() // Webhooks are generally authenticated
+                                                                                // via signature, permitting for testing
+                        .requestMatchers("/api/shipment/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
