@@ -42,6 +42,7 @@ public class AuthService {
 
     @Transactional
     public CustomerResponseDTO register(CustomerRequestDTO customerDTO) {
+        log.info("Starting registration for email: {}", customerDTO.email());
         if (customerRepository.existsByEmailIgnoreCase(customerDTO.email())) {
             throw new DuplicateEmailException(EMAIL_ALREADY_EXISTS);
         }
@@ -49,18 +50,27 @@ public class AuthService {
         CustomerEntity customer = customerMapper.toEntity(customerDTO);
         customer.setPassword(passwordEncoder.encode(customerDTO.password()));
         customer.setRole("ROLE_USER");
-        customer.getAddress().forEach(address -> address.setCustomer(customer));
 
+        if (customer.getAddress() != null) {
+            customer.getAddress().forEach(address -> address.setCustomer(customer));
+        } else {
+            log.warn("Customer address list is null for {}", customerDTO.email());
+        }
+
+        log.info("Saving customer entity...");
         CustomerEntity savedCustomer = customerRepository.save(customer);
+        log.info("Customer saved with ID: {}", savedCustomer.getId());
 
-        customerEventProducer.publishCustomerRegistered(
-                CustomerRegisteredEvent.builder()
-                        .customerId(savedCustomer.getId())
-                        .name(savedCustomer.getName())
-                        .email(savedCustomer.getEmail())
-                        .source("AuthService")
-                        .eventType("CustomerRegistered")
-                        .build());
+        if (customerEventProducer != null) {
+            customerEventProducer.publishCustomerRegistered(
+                    CustomerRegisteredEvent.builder()
+                            .customerId(savedCustomer.getId())
+                            .name(savedCustomer.getName())
+                            .email(savedCustomer.getEmail())
+                            .source("AuthService")
+                            .eventType("CustomerRegistered")
+                            .build());
+        }
 
         return customerMapper.toResponseDTO(savedCustomer);
     }
