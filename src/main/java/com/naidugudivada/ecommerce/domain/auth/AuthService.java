@@ -53,6 +53,10 @@ public class AuthService {
         customer.setPassword(passwordEncoder.encode(customerDTO.password()));
         customer.setRole("ROLE_USER");
 
+        if (customer.getActive() == null) {
+            customer.setActive(true);
+        }
+
         if (customer.getAddress() != null) {
             customer.getAddress().forEach(address -> address.setCustomer(customer));
         } else {
