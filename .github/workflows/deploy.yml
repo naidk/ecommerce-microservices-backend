@@ -32,16 +32,16 @@ jobs:
         option_settings:
           aws:elasticbeanstalk:application:environment:
             PORT: 5000
-            DB_URL: \${{ secrets.DB_URL }}
+            DB_URL: ${{ secrets.DB_URL }}
             DB_USER: postgres
-            DB_PASSWORD: \${{ secrets.DB_PASSWORD }}
-            AWS_ACCESS_KEY_ID: \${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: \${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            KAFKA_TRUSTSTORE_PASSWORD: \${{ secrets.KAFKA_TRUSTSTORE_PASSWORD }}
-            KAFKA_BROKER: \${{ secrets.KAFKA_BROKER }}
-            KAFKA_SECURITY_PROTOCOL: \${{ secrets.KAFKA_SECURITY_PROTOCOL }}
-            KAFKA_SASL_MECHANISM: \${{ secrets.KAFKA_SASL_MECHANISM }}
-            KAFKA_JAAS_CONFIG: \${{ secrets.KAFKA_JAAS_CONFIG }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            KAFKA_TRUSTSTORE_PASSWORD: ${{ secrets.KAFKA_TRUSTSTORE_PASSWORD }}
+            KAFKA_BROKER: ${{ secrets.KAFKA_BROKER }}
+            KAFKA_SECURITY_PROTOCOL: ${{ secrets.KAFKA_SECURITY_PROTOCOL }}
+            KAFKA_SASL_MECHANISM: ${{ secrets.KAFKA_SASL_MECHANISM }}
+            KAFKA_JAAS_CONFIG: ${{ secrets.KAFKA_JAAS_CONFIG }}
         EOT
 
     - name: Create Deployment Artifact (ZIP)
