@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
+// @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProductSearchSyncConsumer {
@@ -22,7 +22,8 @@ public class ProductSearchSyncConsumer {
     private final ProductSearchRepository productSearchRepository;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId = KafkaConstants.GROUP_ID)
+    // @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId =
+    // KafkaConstants.GROUP_ID)
     public void consumeProductEvent(String message) {
         log.info("Received message on product-events topic: {}", message);
         try {
