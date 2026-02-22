@@ -43,6 +43,8 @@ jobs:
             KAFKA_SASL_MECHANISM: \${{ secrets.KAFKA_SASL_MECHANISM }}
             KAFKA_JAAS_CONFIG: \${{ secrets.KAFKA_JAAS_CONFIG }}
             ELASTICSEARCH_URL: \${{ secrets.ELASTICSEARCH_URL }}
+            ELASTICSEARCH_USERNAME: \${{ secrets.ELASTICSEARCH_USERNAME }}
+            ELASTICSEARCH_PASSWORD: \${{ secrets.ELASTICSEARCH_PASSWORD }}
         EOT
 
     - name: Create Deployment Artifact (ZIP)
