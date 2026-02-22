@@ -3,13 +3,13 @@ package com.naidugudivada.ecommerce.domain.search;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naidugudivada.ecommerce.domain.product.ProductEntity;
 import com.naidugudivada.ecommerce.domain.product.ProductRepository;
-import com.naidugudivada.ecommerce.domain.product.event.ProductCreatedEvent;
-import com.naidugudivada.ecommerce.domain.product.event.StockUpdatedEvent;
-import com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants;
+// import com.naidugudivada.ecommerce.domain.product.event.ProductCreatedEvent;
+// import com.naidugudivada.ecommerce.domain.product.event.StockUpdatedEvent;
+// import com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+// import org.springframework.kafka.annotation.KafkaListener;
+// import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
