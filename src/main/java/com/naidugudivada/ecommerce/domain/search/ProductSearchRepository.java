@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
-@Repository
-public interface ProductSearchRepository extends ElasticsearchRepository<ProductDocument, UUID> {
+// @Repository
+public interface ProductSearchRepository /* extends ElasticsearchRepository<ProductDocument, UUID> */ {
     Page<ProductDocument> findByNameOrLabel(String name, String label, Pageable pageable);
 
     Page<ProductDocument> findByCategory(ProductCategoryEnum category, Pageable pageable);

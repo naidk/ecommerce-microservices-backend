@@ -60,12 +60,12 @@ public class ProductSearchSyncConsumer {
                     .vendorId(entity.getVendor() != null ? entity.getVendor().getId() : null)
                     .build();
 
-            productSearchRepository.save(doc);
-            log.info("Successfully synced product {} to Elasticsearch.", productId);
+            // productSearchRepository.save(doc);
+            log.info("Successfully synced product {} to Elasticsearch (SIMULATED).", productId);
         } else {
             // If the product was deleted, remove it from Elasticsearch
-            productSearchRepository.deleteById(productId);
-            log.info("Successfully removed product {} from Elasticsearch.", productId);
+            // productSearchRepository.deleteById(productId);
+            log.info("Successfully removed product {} from Elasticsearch (SIMULATED).", productId);
         }
     }
 }
