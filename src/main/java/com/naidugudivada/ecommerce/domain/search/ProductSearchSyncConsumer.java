@@ -8,6 +8,7 @@ import com.naidugudivada.ecommerce.domain.product.ProductRepository;
 import com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Profile("!aws")
 public class ProductSearchSyncConsumer {
 
     private final ProductRepository productRepository;
