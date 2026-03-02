@@ -64,6 +64,8 @@ public class ReviewService {
 
         ReviewEntity savedReview = reviewRepository.save(reviewEntity);
 
+        updateProductRatings(product.getId());
+
         return reviewMapper.toResponseDTO(savedReview);
     }
 
@@ -86,6 +88,23 @@ public class ReviewService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own reviews.");
         }
 
+        UUID productId = review.getProduct().getId();
         reviewRepository.delete(review);
+        updateProductRatings(productId);
+    }
+
+    private void updateProductRatings(UUID productId) {
+        ProductEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(String.format(PRODUCT_NOT_FOUND_WITH_ID, productId)));
+
+        Double avgRating = reviewRepository.getAverageRatingByProductId(productId);
+        Integer totalReviews = reviewRepository.getCountByProductId(productId);
+
+        product.setAverageRating(avgRating != null ? avgRating : 0.0);
+        product.setTotalReviews(totalReviews != null ? totalReviews : 0);
+
+        productRepository.save(product);
+        log.info("Updated ratings for Product [{}]. New Avg: {}, Total: {}", productId, product.getAverageRating(),
+                product.getTotalReviews());
     }
 }

@@ -56,10 +56,12 @@ public class ProductEntity extends BaseEntity {
 
     @Column(nullable = false)
     @ColumnDefault("0.0")
+    @lombok.Builder.Default
     private Double averageRating = 0.0;
 
     @Column(nullable = false)
     @ColumnDefault("0")
+    @lombok.Builder.Default
     private Integer totalReviews = 0;
 
     @Column

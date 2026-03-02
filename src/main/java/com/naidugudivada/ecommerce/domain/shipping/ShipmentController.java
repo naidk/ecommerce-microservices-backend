@@ -24,6 +24,11 @@ public class ShipmentController {
         return ResponseEntity.ok(shipmentService.getShipmentByOrderId(orderId));
     }
 
+    @GetMapping("/order/")
+    public ResponseEntity<String> getTrackingByEmptyOrderId() {
+        return ResponseEntity.badRequest().body("Order ID is required");
+    }
+
     @PutMapping("/{shipmentId}/status")
     public ResponseEntity<ShipmentResponseDTO> updateShipmentStatus(
             @PathVariable UUID shipmentId,

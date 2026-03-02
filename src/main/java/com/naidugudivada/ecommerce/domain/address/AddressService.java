@@ -2,6 +2,8 @@ package com.naidugudivada.ecommerce.domain.address;
 
 import com.naidugudivada.ecommerce.domain.address.dto.AddressRequestDTO;
 import com.naidugudivada.ecommerce.domain.address.dto.AddressResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors;
 import com.naidugudivada.ecommerce.domain.address.exceptions.AddressNotFoundException;
 import com.naidugudivada.ecommerce.domain.customer.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,24 @@ public class AddressService {
         addressEntity.setCustomer(customerEntity);
 
         return addressMapper.toResponseDTO(addressRepository.save(addressEntity));
+    }
+
+    @Transactional(readOnly = true)
+    public List<AddressResponseDTO> findByCustomerId(UUID customerId) {
+        return addressRepository.findByCustomerId(customerId).stream()
+                .map(addressMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public AddressResponseDTO findById(UUID id) {
+        return addressMapper.toResponseDTO(getEntity(id));
+    }
+
+    @Transactional
+    public void deleteById(UUID id) {
+        var entity = getEntity(id);
+        addressRepository.delete(entity);
     }
 
     @Transactional

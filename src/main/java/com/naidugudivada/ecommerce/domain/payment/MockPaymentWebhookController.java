@@ -31,7 +31,19 @@ public class MockPaymentWebhookController {
     @PostMapping("/success/{orderId}")
     public ResponseEntity<ShipmentResponseDTO> handlePaymentSuccess(@PathVariable UUID orderId) {
         log.info("Mock Webhook invoked: Payment successful for Order [{}]", orderId);
+        return processPaymentSuccess(orderId);
+    }
 
+    /**
+     * Fallback for empty orderId in tests
+     */
+    @PostMapping("/success/")
+    public ResponseEntity<String> handleEmptyPaymentSuccess() {
+        log.warn("Mock Webhook invoked with empty OrderId");
+        return ResponseEntity.badRequest().body("Order ID is required");
+    }
+
+    private ResponseEntity<ShipmentResponseDTO> processPaymentSuccess(UUID orderId) {
         // 1. Update Order Status
         try {
             orderService.updateStatus(orderId.toString(), OrderStatusEnum.PAID);

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository
-interface ShoppingCartRepository extends JpaRepository<ShoppingCartEntity, UUID> {
+public interface ShoppingCartRepository extends JpaRepository<ShoppingCartEntity, UUID> {
     Optional<ShoppingCartEntity> findByCustomerId(UUID customerId);
 }

@@ -2,6 +2,8 @@ package com.naidugudivada.ecommerce.domain.promotion;
 
 import com.naidugudivada.ecommerce.domain.promotion.dto.PromotionRequestDTO;
 import com.naidugudivada.ecommerce.domain.promotion.dto.PromotionResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors;
 import com.naidugudivada.ecommerce.domain.promotion.exceptions.InvalidPromotionException;
 import com.naidugudivada.ecommerce.domain.promotion.exceptions.PromotionNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,13 @@ public class PromotionService {
         entity.setCode(entity.getCode().toUpperCase().trim());
 
         return promotionMapper.toResponseDTO(promotionRepository.save(entity));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PromotionResponseDTO> getActivePromotions() {
+        return promotionRepository.findByIsActiveTrue().stream()
+                .map(promotionMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     public PromotionEntity validateAndGetPromotion(String code) {

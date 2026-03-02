@@ -9,6 +9,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class WishlistEntity extends BaseEntity {
     @JoinColumn(name = "customer_id", nullable = false, unique = true)
     private CustomerEntity customer;
 
+    @Builder.Default
     @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishlistItemEntity> items = new ArrayList<>();
 }

@@ -4,8 +4,12 @@ import com.naidugudivada.ecommerce.domain.shoppingcart.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants.CLEAR_CART_TOPIC;
+import static com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants.GROUP_ID;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,7 +22,7 @@ public class OrderConsumer {
     private final ShoppingCartService shoppingCartService;
 
     @Transactional
-    // @KafkaListener(topics = CLEAR_CART_TOPIC, groupId = GROUP_ID)
+    @KafkaListener(topics = CLEAR_CART_TOPIC, groupId = GROUP_ID)
     public void consumeClearCartRequest(String customerId) {
         log.info("Received clear cart request for Customer ID: [{}]", customerId);
 

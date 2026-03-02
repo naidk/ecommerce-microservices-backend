@@ -5,15 +5,15 @@ import com.naidugudivada.ecommerce.domain.product.ProductEntity;
 import com.naidugudivada.ecommerce.domain.product.ProductRepository;
 // import com.naidugudivada.ecommerce.domain.product.event.ProductCreatedEvent;
 // import com.naidugudivada.ecommerce.domain.product.event.StockUpdatedEvent;
-// import com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants;
+import com.naidugudivada.ecommerce.infrastructure.constants.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-// import org.springframework.kafka.annotation.KafkaListener;
-// import org.springframework.stereotype.Service;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-// @Service
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class ProductSearchSyncConsumer {
@@ -22,7 +22,7 @@ public class ProductSearchSyncConsumer {
     private final ProductSearchRepository productSearchRepository;
     private final ObjectMapper objectMapper;
 
-    // @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId =
+    @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC, groupId = KafkaConstants.GROUP_ID)
     // KafkaConstants.GROUP_ID)
     public void consumeProductEvent(String message) {
         log.info("Received message on product-events topic: {}", message);
@@ -60,12 +60,12 @@ public class ProductSearchSyncConsumer {
                     .vendorId(entity.getVendor() != null ? entity.getVendor().getId() : null)
                     .build();
 
-            // productSearchRepository.save(doc);
-            log.info("Successfully synced product {} to Elasticsearch (SIMULATED).", productId);
+            productSearchRepository.save(doc);
+            log.info("Successfully synced product {} to Elasticsearch.", productId);
         } else {
             // If the product was deleted, remove it from Elasticsearch
-            // productSearchRepository.deleteById(productId);
-            log.info("Successfully removed product {} from Elasticsearch (SIMULATED).", productId);
+            productSearchRepository.deleteById(productId);
+            log.info("Successfully removed product {} from Elasticsearch.", productId);
         }
     }
 }

@@ -35,6 +35,7 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final ProductEventProducer productEventProducer;
     private final AwsS3Service awsS3Service;
+    private final com.naidugudivada.ecommerce.domain.vendor.VendorRepository vendorRepository;
 
     @Transactional
     @CacheEvict(value = "products", key = "#id")
@@ -81,7 +82,12 @@ public class ProductService {
 
         validateCategory(product.category());
 
-        ProductEntity savedProduct = productRepository.save(productMapper.toEntity(product));
+        // Validate vendor existence
+        vendorRepository.findById(product.vendorId())
+                .orElseThrow(() -> new RuntimeException("Vendor not found with id: " + product.vendorId()));
+
+        ProductEntity entity = productMapper.toEntity(product);
+        ProductEntity savedProduct = productRepository.save(entity);
 
         productEventProducer.publishProductCreated(
                 ProductCreatedEvent.builder()
@@ -109,6 +115,11 @@ public class ProductService {
 
         validateCategory(product.category());
         productMapper.updateEntityFromDto(product, entity);
+
+        if (product.vendorId() != null) {
+            vendorRepository.findById(product.vendorId())
+                    .orElseThrow(() -> new RuntimeException("Vendor not found with id: " + product.vendorId()));
+        }
 
         return productMapper.toResponseDTO(productRepository.save(entity));
     }

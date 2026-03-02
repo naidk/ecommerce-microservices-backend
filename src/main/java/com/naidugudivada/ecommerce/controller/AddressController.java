@@ -5,6 +5,8 @@ import com.naidugudivada.ecommerce.domain.address.dto.AddressRequestDTO;
 import com.naidugudivada.ecommerce.domain.address.dto.AddressResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,7 +36,24 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AddressResponseDTO> updateById(@PathVariable UUID id, @RequestBody AddressRequestDTO address) {
+    public ResponseEntity<AddressResponseDTO> updateById(@PathVariable UUID id,
+            @RequestBody AddressRequestDTO address) {
         return ResponseEntity.ok(addressService.updateById(id, address));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AddressResponseDTO> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(addressService.findById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
+        addressService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<AddressResponseDTO>> getByCustomerId(@PathVariable UUID customerId) {
+        return ResponseEntity.ok(addressService.findByCustomerId(customerId));
     }
 }

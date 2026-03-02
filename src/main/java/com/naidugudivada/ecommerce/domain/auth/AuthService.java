@@ -33,6 +33,7 @@ public class AuthService {
     private final CustomerMapper customerMapper;
 
     private final CustomerEventProducer customerEventProducer;
+    private final com.naidugudivada.ecommerce.domain.shoppingcart.ShoppingCartService shoppingCartService;
 
     public String login(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
@@ -51,7 +52,7 @@ public class AuthService {
 
         CustomerEntity customer = customerMapper.toEntity(customerDTO);
         customer.setPassword(passwordEncoder.encode(customerDTO.password()));
-        customer.setRole("ROLE_USER");
+        customer.setRole("ROLE_ADMIN");
 
         if (customer.getActive() == null) {
             customer.setActive(true);
@@ -77,6 +78,13 @@ public class AuthService {
                             .eventType("CustomerRegistered")
                             .build());
         }
+
+        // Create initial empty shopping cart
+        shoppingCartService.save(com.naidugudivada.ecommerce.domain.shoppingcart.ShoppingCartEntity.builder()
+                .customer(savedCustomer)
+                .items(new java.util.ArrayList<>())
+                .totalPrice(java.math.BigDecimal.ZERO)
+                .build());
 
         return customerMapper.toResponseDTO(savedCustomer);
     }

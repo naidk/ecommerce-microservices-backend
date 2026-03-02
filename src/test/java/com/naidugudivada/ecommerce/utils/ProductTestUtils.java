@@ -44,6 +44,7 @@ public class ProductTestUtils {
                 product.getAverageRating(),
                 product.getTotalReviews(),
                 product.getImageUrl(),
+                ID,
                 LocalDateTime.now(),
                 LocalDateTime.now());
     }
@@ -59,6 +60,7 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getInstallments(),
                 product.getStockQuantity(),
+                ID,
                 product.getActive(),
                 product.getImageUrl());
     }
@@ -74,6 +76,7 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getInstallments(),
                 product.getStockQuantity(),
+                ID,
                 product.getActive(),
                 product.getImageUrl());
     }
@@ -89,6 +92,7 @@ public class ProductTestUtils {
                 product.getDiscount(),
                 product.getInstallments(),
                 product.getStockQuantity(),
+                ID,
                 product.getActive(),
                 product.getImageUrl());
     }

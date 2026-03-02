@@ -1,9 +1,16 @@
+# =========================
+# Maven / Java build output
+# =========================
 HELP.md
 target/
 logs/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+# =========================
+# IDE / Editor files
+# =========================
 
 ### STS ###
 .apt_generated
@@ -15,7 +22,7 @@ logs/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -37,7 +44,34 @@ build/
 ### VS Code ###
 .vscode/
 
-### Custom Ignores ###
+# =========================
+# Secrets / environment files (DO NOT COMMIT)
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Private keys / SSH keys (DO NOT COMMIT)
+# =========================
+*.pem
+*.ppk
+*.key
+
+# =========================
+# Docker overrides
+# =========================
+docker-compose.override.yml
+
+# =========================
+# OS junk
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs / temp
+# =========================
 *.log
 eblogs*
 eb_*.txt
@@ -49,3 +83,5 @@ ssh_debug.log
 test_*.log
 test_simple*.log
 stack.txt
+hs_err_pid*.log
+replay_pid*.log

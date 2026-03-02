@@ -41,7 +41,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"Password123\",\n  \"phoneNumber\": \"+15551234567\",\n  \"address\": [\n    {\n      \"street\": \"123 Main St\",\n      \"number\": \"Apt 4B\",\n      \"neighborhood\": \"Downtown\",\n      \"city\": \"Chicago\",\n      \"state\": \"IL\",\n      \"zipCode\": \"60601\",\n      \"country\": \"USA\",\n      \"type\": \"HOME\",\n      \"isDefault\": true\n    }\n  ]\n}"
+                            "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"Password123\",\n  \"phoneNumber\": \"+15551234567\",\n  \"address\": [\n    {\n      \"street\": \"123 Main St\",\n      \"number\": \"Apt 4B\",\n      \"neighborhood\": \"Downtown\",\n      \"city\": \"Chicago\",\n      \"state\": \"IL\",\n      \"zipCode\": \"60601\",\n      \"country\": \"USA\",\n      \"type\": \"SHIPPING\",\n      \"isDefault\": true\n    }\n  ]\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/api/auth/register",
@@ -202,7 +202,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"businessName\": \"Awesome Electronics {{userEmail}}\",\n  \"contactEmail\": \"vendor-{{userEmail}}\",\n  \"contactPhone\": \"1234567890\",\n  \"description\": \"We sell the best electronics!\"\n}"
+                            "raw": "{\n  \"companyName\": \"Awesome Electronics {{userEmail}}\",\n  \"taxId\": \"TAX-{{$timestamp}}\",\n  \"contactEmail\": \"vendor-{{userEmail}}\"\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/api/vendor/register",
@@ -287,7 +287,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"sku\": \"SKU-{{$timestamp}}\",\n  \"name\": \"Smart Laptop Pro {{userEmail}}\",\n  \"description\": \"Awesome new laptop\",\n  \"price\": 1299.99,\n  \"stockQuantity\": 50,\n  \"category\": \"ELECTRONICS\",\n  \"label\": \"NEW\",\n  \"vendorId\": \"{{vendorId}}\"\n}"
+                            "raw": "{\n  \"sku\": \"SKU-{{$timestamp}}\",\n  \"name\": \"Smart Laptop Pro {{userEmail}}\",\n  \"label\": \"NEW\",\n  \"category\": \"LAPTOP\",\n  \"price\": 1299.99,\n  \"discount\": 10.0,\n  \"installments\": 12,\n  \"stockQuantity\": 50,\n  \"vendorId\": \"{{vendorId}}\",\n  \"active\": true\n}"
                         },
                         "url": {
                             "raw": "{{baseUrl}}/api/product",
