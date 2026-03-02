@@ -1,37 +1,35 @@
 # =============================================================
 #  setup-aws-eb.ps1
-#  Creates AWS Elastic Beanstalk infrastructure via AWS CLI
-#  Run this ONCE to bootstrap your cloud environment
-#
-#  Usage: .\setup-aws-eb.ps1
+#  Automates AWS Elastic Beanstalk Infrastructure Setup
+#  Run: .\setup-aws-eb.ps1
 # =============================================================
 
-# ── STEP 0: Fill in your secrets here ─────────────────────────────────────
 $config = @{
-    # AWS credentials — fill in before running (DO NOT COMMIT with real values)
-    AWS_ACCESS_KEY_ID     = "<YOUR_AWS_ACCESS_KEY_ID>"
-    AWS_SECRET_ACCESS_KEY = "<YOUR_AWS_SECRET_ACCESS_KEY>"
+    # ── AWS Region & Credentials ──────────────────────────────────────────
+    # These are picked up from your local environment/profile
     AWS_REGION            = "us-east-1"
-
+    
     # App / Environment names (must match .elasticbeanstalk/config.yml)
     APP_NAME              = "ecommerce-api"
     ENV_NAME              = "ecommerce-api-prod"
 
     # ── Fill these in from your service providers ──────────────────────────
-    DB_URL                = "jdbc:postgresql://<NEON_HOST>/neondb?sslmode=require"
+    DB_URL                = "<NEON_JDBC_URL>"
     DB_USER               = "<NEON_USER>"
     DB_PASSWORD           = "<NEON_PASSWORD>"
 
-    KAFKA_BROKER          = "<AIVEN_HOST>:<PORT>"
+    KAFKA_BROKER          = "<AIVEN_KAFKA_BROKER>"
     KAFKA_SECURITY_PROTOCOL = "SASL_SSL"
     KAFKA_SASL_MECHANISM  = "SCRAM-SHA-256"
     KAFKA_JAAS_CONFIG     = "org.apache.kafka.common.security.scram.ScramLoginModule required username='avnadmin' password='<AIVEN_PASSWORD>';"
 
-    REDIS_HOST            = "<UPSTASH_HOST>"
+    REDIS_HOST            = "<UPSTASH_REDIS_HOST>"
     REDIS_PORT            = "6379"
     REDIS_PASSWORD        = "<UPSTASH_PASSWORD>"
     REDIS_SSL_ENABLED     = "true"
 
+    AWS_ACCESS_KEY_ID     = "<YOUR_AWS_ACCESS_KEY_ID>"
+    AWS_SECRET_ACCESS_KEY = "<YOUR_AWS_SECRET_ACCESS_KEY>"
     AWS_S3_BUCKET_NAME    = "naidu-ecommerce-products-images-v1"
     AWS_SES_SENDER        = "naidugudivada766@gmail.com"
     JWT_SECRET            = "MySuperSecretKeyForJwtSigningShouldBeLongEnough1234567890"
@@ -40,9 +38,9 @@ $config = @{
 }
 
 # ── Helpers ────────────────────────────────────────────────────────────────
-function Log($msg) { Write-Host "`n>>> $msg" -ForegroundColor Cyan }
-function Ok($msg)  { Write-Host "    OK: $msg" -ForegroundColor Green }
-function Err($msg) { Write-Host "    ERR: $msg" -ForegroundColor Red }
+function Log($msg) { Write-Output "`n>>> $msg" }
+function Ok($msg)  { Write-Output "    OK: $msg" }
+function Err($msg) { Write-Output "    ERR: $msg" }
 
 function Check-Placeholder($key, $value) {
     if ($value -match "<.+>") {
@@ -60,13 +58,13 @@ foreach ($key in $config.Keys) {
 }
 Ok "All credentials filled in"
 
-# ── Configure AWS CLI credentials ──────────────────────────────────────────
+# ── Configure AWS CLI ─────────────────────────────────────────────────────
 Log "Configuring AWS CLI..."
-$env:AWS_ACCESS_KEY_ID     = $config.AWS_ACCESS_KEY_ID
-$env:AWS_SECRET_ACCESS_KEY = $config.AWS_SECRET_ACCESS_KEY
-$env:AWS_DEFAULT_REGION    = $config.AWS_REGION
+aws configure set aws_access_key_id $config.AWS_ACCESS_KEY_ID
+aws configure set aws_secret_access_key $config.AWS_SECRET_ACCESS_KEY
+aws configure set default.region $config.AWS_REGION
 
-aws sts get-caller-identity | Out-Null
+$identity = aws sts get-caller-identity 2>&1
 if ($LASTEXITCODE -ne 0) { Err "AWS credentials are invalid. Check your keys."; exit 1 }
 Ok "AWS credentials verified"
 
@@ -76,12 +74,22 @@ Log "Step 1: Setting up IAM roles..."
 # Check if service role exists
 $roleExists = aws iam get-role --role-name "aws-elasticbeanstalk-service-role" 2>&1
 if ($LASTEXITCODE -ne 0) {
+    # Use a temp file for the policy document to avoid PowerShell escaping issues
+    $policyFile = Join-Path $env:TEMP "eb-service-role-policy.json"
+    '{
+        "Version":"2012-10-17",
+        "Statement":[{"Effect":"Allow","Principal":{"Service":"elasticbeanstalk.amazonaws.com"},"Action":"sts:AssumeRole"}]
+    }' | Set-Content -Path $policyFile -Encoding UTF8
+
     aws iam create-role `
         --role-name "aws-elasticbeanstalk-service-role" `
-        --assume-role-policy-document '{
-            "Version":"2012-10-17",
-            "Statement":[{"Effect":"Allow","Principal":{"Service":"elasticbeanstalk.amazonaws.com"},"Action":"sts:AssumeRole"}]
-        }' | Out-Null
+        --assume-role-policy-document "file://$policyFile" | Out-Null
+    
+    Remove-Item $policyFile -ErrorAction SilentlyContinue
+    
+    Log "    Waiting for service role to propagate..."
+    Start-Sleep -Seconds 10
+
     aws iam attach-role-policy `
         --role-name "aws-elasticbeanstalk-service-role" `
         --policy-arn "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth" | Out-Null
@@ -96,12 +104,22 @@ if ($LASTEXITCODE -ne 0) {
 # Check if instance profile exists
 $profileExists = aws iam get-instance-profile --instance-profile-name "aws-elasticbeanstalk-ec2-role" 2>&1
 if ($LASTEXITCODE -ne 0) {
+    # Use a temp file for the policy document
+    $policyFile = Join-Path $env:TEMP "eb-ec2-role-policy.json"
+    '{
+        "Version":"2012-10-17",
+        "Statement":[{"Effect":"Allow","Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]
+    }' | Set-Content -Path $policyFile -Encoding UTF8
+
     aws iam create-role `
         --role-name "aws-elasticbeanstalk-ec2-role" `
-        --assume-role-policy-document '{
-            "Version":"2012-10-17",
-            "Statement":[{"Effect":"Allow","Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]
-        }' | Out-Null
+        --assume-role-policy-document "file://$policyFile" | Out-Null
+
+    Remove-Item $policyFile -ErrorAction SilentlyContinue
+
+    Log "    Waiting for EC2 role to propagate..."
+    Start-Sleep -Seconds 10
+
     aws iam attach-role-policy `
         --role-name "aws-elasticbeanstalk-ec2-role" `
         --policy-arn "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier" | Out-Null
@@ -110,6 +128,9 @@ if ($LASTEXITCODE -ne 0) {
         --policy-arn "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker" | Out-Null
     aws iam create-instance-profile `
         --instance-profile-name "aws-elasticbeanstalk-ec2-role" | Out-Null
+    
+    Start-Sleep -Seconds 5
+    
     aws iam add-role-to-instance-profile `
         --instance-profile-name "aws-elasticbeanstalk-ec2-role" `
         --role-name "aws-elasticbeanstalk-ec2-role" | Out-Null
@@ -144,7 +165,7 @@ $envExists = aws elasticbeanstalk describe-environments `
 if ($envExists -ne "None" -and $envExists -ne $null -and $envExists -notmatch "Error") {
     Ok "Environment '$($config.ENV_NAME)' already exists (status: $envExists)"
 } else {
-    # Build option settings JSON for environment variables
+    # Build option settings hash (without ConvertTo-Json yet)
     $optionSettings = @(
         @{ Namespace="aws:autoscaling:launchconfiguration"; OptionName="IamInstanceProfile"; Value="aws-elasticbeanstalk-ec2-role" }
         @{ Namespace="aws:elasticbeanstalk:environment"; OptionName="ServiceRole"; Value="aws-elasticbeanstalk-service-role" }
@@ -169,7 +190,11 @@ if ($envExists -ne "None" -and $envExists -ne $null -and $envExists -notmatch "E
         @{ Namespace="aws:elasticbeanstalk:application:environment"; OptionName="AWS_S3_BUCKET_NAME"; Value=$config.AWS_S3_BUCKET_NAME }
         @{ Namespace="aws:elasticbeanstalk:application:environment"; OptionName="AWS_SES_SENDER"; Value=$config.AWS_SES_SENDER }
         @{ Namespace="aws:elasticbeanstalk:application:environment"; OptionName="JWT_SECRET"; Value=$config.JWT_SECRET }
-    ) | ConvertTo-Json -Depth 3 -Compress
+    )
+
+    # Write option settings to a temporary JSON file to avoid PowerShell CLI escaping hell
+    $optionsFile = Join-Path $env:TEMP "eb-options.json"
+    $optionSettings | ConvertTo-Json -Depth 3 | Set-Content -Path $optionsFile -Encoding UTF8
 
     # Get Docker solution stack
     $solutionStack = aws elasticbeanstalk list-available-solution-stacks `
@@ -177,63 +202,49 @@ if ($envExists -ne "None" -and $envExists -ne $null -and $envExists -notmatch "E
         --output text | ForEach-Object { $_ -split "`t" } | Where-Object { $_ -match "Docker" } | Select-Object -Last 1
 
     if (-not $solutionStack) {
-        $solutionStack = "64bit Amazon Linux 2023 v4.3.0 running Docker"
+        # Fallback to a known version if list fails
+        $solutionStack = "64bit Amazon Linux 2023 v4.10.0 running Docker"
     }
 
-    Write-Host "    Using platform: $solutionStack" -ForegroundColor Gray
+    Write-Output "    Using platform: $solutionStack"
 
-    aws elasticbeanstalk create-environment `
+    $createResult = aws elasticbeanstalk create-environment `
         --application-name $config.APP_NAME `
         --environment-name $config.ENV_NAME `
         --solution-stack-name $solutionStack `
-        --option-settings $optionSettings | Out-Null
+        --option-settings "file://$optionsFile" 2>&1
 
-    if ($LASTEXITCODE -ne 0) { Err "Failed to create environment"; exit 1 }
+    Remove-Item $optionsFile -ErrorAction SilentlyContinue
+
+    if ($LASTEXITCODE -ne 0) { 
+        Err "Failed to create environment: $createResult"
+        exit 1 
+    }
     Ok "Environment '$($config.ENV_NAME)' creation started"
 }
 
-# -- Step 4: Wait for environment to be ready ------------
-Log "Step 4: Waiting for environment to become Ready (up to 10 mins)..."
-$maxWait = 20
-$attempt = 0
-$status  = ""
-
-while ($status -ne "Ready" -and $attempt -lt $maxWait) {
-    Start-Sleep -Seconds 30
-    $attempt++
-    $status = aws elasticbeanstalk describe-environments `
+# ── Wait for DNS ──────────────────────────────────────────────────────────
+Log "Waiting for environment to be Green and get endpoint..."
+$envUrl = ""
+while ($true) {
+    $envData = aws elasticbeanstalk describe-environments `
         --application-name $config.APP_NAME `
         --environment-names $config.ENV_NAME `
-        --query "Environments[0].Status" --output text
-    Write-Host "    Attempt $attempt/$maxWait - Status: $status" -ForegroundColor Gray
+        --query "Environments[0].[Status, Health, CNAME]" `
+        --output text 2>&1
+
+    if ($envData -match "Ready") {
+        $parts = $envData -split "`t"
+        $envUrl = $parts[2]
+        if ($envUrl) { break }
+    }
+    Write-Host "." -NoNewline
+    Start-Sleep -Seconds 10
 }
 
-if ($status -ne "Ready") {
-    Err "Environment did not become Ready in time. Check the EB Console."
-    exit 1
-}
-Ok "Environment is READY!"
+Ok "Environment is Ready!"
+Ok "URL: http://$envUrl"
 
-# ── Step 5: Get and display the URL ───────────────────────────────────────
-Log "Step 5: Getting environment URL..."
-$ebUrl = aws elasticbeanstalk describe-environments `
-    --application-name $config.APP_NAME `
-    --environment-names $config.ENV_NAME `
-    --query "Environments[0].CNAME" --output text
-
-Write-Host ""
-Write-Host "============================================================" -ForegroundColor Green
-Write-Host "  DEPLOYMENT COMPLETE!" -ForegroundColor Green
-Write-Host "============================================================" -ForegroundColor Green
-Write-Host "  App URL  : http://$ebUrl" -ForegroundColor Yellow
-Write-Host "  Health   : http://$ebUrl/actuator/health" -ForegroundColor Yellow
-Write-Host "  Swagger  : http://$ebUrl/swagger-ui.html" -ForegroundColor Yellow
-Write-Host "============================================================" -ForegroundColor Green
-Write-Host ""
-Write-Host "  Next: push your code with 'git push origin main'" -ForegroundColor Cyan
-Write-Host "        GitHub Actions will deploy your Docker image automatically." -ForegroundColor Cyan
-Write-Host ""
-
-# Save EB_URL to a local file for GitHub Actions secret reference
-"EB_URL=http://$ebUrl" | Out-File -FilePath ".eb_url.txt" -Encoding utf8
-Ok "URL saved to .eb_url.txt (add this as GitHub Secret EB_URL)"
+# Save URL for next steps
+"http://$envUrl" | Set-Content -Path ".eb_url.txt"
+Ok "URL saved to .eb_url.txt"
