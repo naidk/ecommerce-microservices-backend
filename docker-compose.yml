@@ -4,24 +4,45 @@ services:
     container_name: ecommerce_api
     ports:
       - "8081:8080"
+    env_file:
+      - .env
     environment:
+      # Server
       - SERVER_PORT=${PORT:-8080}
+
+      # Database
       - DB_URL=${DB_URL:-jdbc:postgresql://postgres:5432/ecommerce}
       - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-postgres}
+
+      # Kafka
       - KAFKA_BROKER=${KAFKA_BROKER:-kafka:9092}
       - KAFKA_SECURITY_PROTOCOL=${KAFKA_SECURITY_PROTOCOL:-PLAINTEXT}
       - KAFKA_SASL_MECHANISM=${KAFKA_SASL_MECHANISM:-PLAIN}
       - KAFKA_JAAS_CONFIG=${KAFKA_JAAS_CONFIG:-}
+
+      # Payment mock
       - PAYMENT_API_URL=${PAYMENT_API_URL:-https://echo.zuplo.io}
+
+      # Redis
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - REDIS_SSL_ENABLED=${REDIS_SSL_ENABLED:-false}
+
+      # Elasticsearch
       - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-dummy}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-dummy}
+
+      # AWS (from .env)
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_SES_SENDER=${AWS_SES_SENDER}
+
+      # JWT (from .env)
+      - JWT_SECRET=${JWT_SECRET}
+
     depends_on:
       - postgres
       - kafka
