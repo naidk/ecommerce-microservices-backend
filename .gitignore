@@ -85,3 +85,12 @@ test_simple*.log
 stack.txt
 hs_err_pid*.log
 replay_pid*.log
+
+# =========================
+# AWS / Elastic Beanstalk
+# =========================
+deploy.zip
+*.zip
+.elasticbeanstalk/saved_configs/
+.eb_url.txt
+# NOTE: aiven-ca.crt is intentionally tracked — required for Docker build (Kafka SSL truststore)
