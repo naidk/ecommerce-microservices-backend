@@ -22,7 +22,7 @@
                                     "",
                                     "if (pm.response.code === 201 || pm.response.code === 200) {",
                                     "    var jsonData = pm.response.json();",
-                                    "    if (jsonData.token) pm.collectionVariables.set(\"jwtToken\", jsonData.token);",
+                                    "    if (jsonData.accessToken) pm.collectionVariables.set(\"jwtToken\", jsonData.accessToken);",
                                     "    if (jsonData.id) pm.collectionVariables.set(\"customerId\", jsonData.id);",
                                     "    else if (jsonData.user && jsonData.user.id) pm.collectionVariables.set(\"customerId\", jsonData.user.id);",
                                     "}"
@@ -69,7 +69,7 @@
                                     "});",
                                     "",
                                     "var jsonData = pm.response.json();",
-                                    "if (jsonData.token) pm.collectionVariables.set(\"jwtToken\", jsonData.token);"
+                                    "if (jsonData.accessToken) pm.collectionVariables.set(\"jwtToken\", jsonData.accessToken);"
                                 ],
                                 "type": "text/javascript"
                             }
