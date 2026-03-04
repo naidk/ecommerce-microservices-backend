@@ -50,6 +50,10 @@ jobs:
         run: |
           CNAME=$(aws elasticbeanstalk describe-environments --application-name ecommerce-api --environment-names ecommerce-api-prod --query "Environments[0].CNAME" --output text --region us-east-1)
           echo "eb_url=http://$CNAME" >> $GITHUB_OUTPUT
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
 
   # ── Job 2: API Tests (runs after deploy) ─────────────────────────────────
   api-tests:
