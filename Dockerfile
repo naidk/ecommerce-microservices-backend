@@ -20,4 +20,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=5 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
 
 # Optimize memory for t3.micro free-tier instances
-ENTRYPOINT ["java", "-Xmx400m", "-Xms200m", "-XX:+UseSerialGC", "-XX:MaxMetaspaceSize=128m", "-Dspring.profiles.active=aws", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx400m", "-Xms200m", "-XX:+UseSerialGC", "-Dspring.profiles.active=aws", "-jar", "app.jar"]
