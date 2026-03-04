@@ -11,7 +11,7 @@ jobs:
     name: Build & Deploy (Docker)
     runs-on: ubuntu-latest
     outputs:
-      eb_url: ${{ steps.set_url.outputs.eb_url }}
+      eb_url: ${{ steps.fetch_url.outputs.eb_url }}
 
     steps:
       - name: Checkout code
@@ -44,9 +44,11 @@ jobs:
           deployment_package: deploy.zip
           wait_for_environment_recovery: 600
 
-      - name: Set EB URL output
-        id: set_url
-        run: echo "eb_url=${{ secrets.EB_URL }}" >> $GITHUB_OUTPUT
+      - name: Fetch Elastic Beanstalk CNAME
+        id: fetch_url
+        run: |
+          CNAME=$(aws elasticbeanstalk describe-environments --application-name ecommerce-api --environment-names ecommerce-api-prod --query "Environments[0].CNAME" --output text --region us-east-1)
+          echo "eb_url=http://$CNAME" >> $GITHUB_OUTPUT
 
   # ── Job 2: API Tests (runs after deploy) ─────────────────────────────────
   api-tests:
@@ -54,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-deploy
     env:
-      BASE_URL: ${{ secrets.EB_URL }}
+      BASE_URL: ${{ needs.build-and-deploy.outputs.eb_url }}
 
     steps:
       - name: Checkout code
