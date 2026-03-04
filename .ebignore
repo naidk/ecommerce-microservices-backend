@@ -1,0 +1,24 @@
+# .ebignore
+# Include the built JAR
+!target/*.jar
+
+# Ignore source code but keep the built classes/JARs
+src/
+.mvn/
+mvnw
+mvnw.cmd
+pom.xml
+
+# Ignore local junk
+.idea/
+.vscode/
+*.log
+.env
+*.pem
+
+# Keep EB and Docker configs
+!.elasticbeanstalk/
+!Dockerfile
+!Dockerrun.aws.json
+!Procfile
+!aiven-ca.crt
