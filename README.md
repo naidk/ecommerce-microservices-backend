@@ -6,10 +6,21 @@
 ![Postgres](https://img.shields.io/badge/PostgreSQL-Persistence-blue)
 ![Redis](https://img.shields.io/badge/Redis-Caching-red)
 ![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
+![AWS](https://img.shields.io/badge/AWS-Elastic_Beanstalk-FF9900)
 
 A robust, event-driven E-commerce backend built with **Spring Boot 3**, designed to handle high-concurrency scenarios, distributed data consistency, and fault tolerance.
 
 **Extended and maintained by Naidu Gudivada.**
+
+---
+
+## 🌐 Live Production Environment
+
+The application is currently deployed and running on **AWS Elastic Beanstalk**.
+
+👉 **[Access Live Swagger UI](http://ecommerce-api-prod.eba-jshpsgpi.us-east-1.elasticbeanstalk.com/swagger-ui/index.html)**
+
+---
 
 ## 🚀 Project Overview
 
@@ -43,13 +54,14 @@ This project implements a multi-layered observability strategy to ensure product
 *   **Caching:** Redis 3.4.1
 *   **Documentation:** SpringDoc OpenAPI (Swagger)
 *   **Tooling:** Docker Compose, Lombok, MapStruct
+*   **Cloud:** AWS Elastic Beanstalk (Docker on AL2023)
 
 ## ⚡ Getting Started
 
 ### Prerequisites
 *   Docker & Docker Compose installed
 
-### Run the Application
+### Run Locally
 The entire environment (API, Database, Kafka, Zookeeper, Redis) is containerized.
 
 1.  Build and Start the services:
@@ -57,13 +69,8 @@ The entire environment (API, Database, Kafka, Zookeeper, Redis) is containerized
     docker compose up -d --build
     ```
 
-3.  The API will be available at `http://localhost:8081`.
-
-## 📚 API Documentation
-
-Interactive API documentation is available via Swagger UI. You can test endpoints, generate payloads, and view response schemas directly in the browser.
-
-👉 **[Access Swagger UI](http://localhost:8081/swagger-ui.html)**
+2.  The API will be available at `http://localhost:8081`.
+3.  Local Swagger: `http://localhost:8081/swagger-ui.html`
 
 ## 🏗 System Flow
 
@@ -74,7 +81,6 @@ The system supports a complete E-commerce lifecycle with data consistency checks
     *   **Register Product**: `POST /api/product` - Adds inventory to the catalog (cached in Redis).
 2.  **Shopping Experience**:
     *   **Add to Cart**: `POST /api/shopping-cart/{customerId}` - Validates stock availability in real-time.
-    *   Inventory is tentatively reserved or validated depending on the strategy.
 3.  **Checkout (Idempotent)**:
     *   `POST /api/order/{customerId}` with header `Idempotency-Key`.
     *   System checks if key exists. If yes, returns cached response.
@@ -88,14 +94,13 @@ The system supports a complete E-commerce lifecycle with data consistency checks
 
 *   **Unit Tests:** JUnit and Mockito for isolated logic testing.
 *   **MVC Tests:** Comprehensive testing of controllers.
-*   **Code Quality:** Strictly typed DTOs (Java Records), Custom Exception Handling (`@ControllerAdvice`), and MapStruct for clean Entity-DTO mapping.
+*   **Automated API Tests**: Python-based runner for Postman collections (`test_postman_live.py`).
 
-## 🚀 CI/CD Pipeline
+## 🚀 CI/CD & Deployment
 
-The project includes a robust **GitHub Actions** workflow (`.github/workflows/ci-cd.yml`) that automates:
-1.  **Build Verification**: Ensures the project compiles and packages correctly using Maven.
-2.  **Automated Testing**: Runs unit and integration tests in an ephemeral environment with Docker services (Postgres, Redis).
-3.  **Docker Build**: Verifies that the Docker image builds successfully on every push and pull request.
+The project includes:
+1.  **GitHub Actions**: Automates build verification and Docker image building.
+2.  **AWS Deployment**: Integrated with Elastic Beanstalk using Docker. Use `eb deploy` for updates.
 
 ## 📄 License
 
