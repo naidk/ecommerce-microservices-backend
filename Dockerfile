@@ -6,8 +6,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
 # Copy the PRE-BUILT jar from the GitHub Actions build
-# Note: GitHub Actions zip will include the target/ directory
-COPY target/*.jar app.jar
+COPY target/ecommerce-extension-0.0.1-SNAPSHOT.jar app.jar
 COPY aiven-ca.crt /app/aiven-ca.crt
 
 # Create a Java Truststore for Aiven CA

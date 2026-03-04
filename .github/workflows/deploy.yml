@@ -29,9 +29,8 @@ jobs:
 
       - name: Create deployment package
         run: |
-          # Only include essentials for the Docker runtime
-          # Specifically include the pre-built target JAR
-          zip -r deploy.zip Dockerfile Dockerrun.aws.json aiven-ca.crt target/*.jar
+          # Include essentials for the Docker runtime and Nginx configuration
+          zip -r deploy.zip Dockerfile Dockerrun.aws.json aiven-ca.crt target/*.jar .platform/
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
