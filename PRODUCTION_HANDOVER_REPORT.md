@@ -53,40 +53,48 @@ The system implements a full E-commerce lifecycle with industry-standard pattern
 
 ---
 
-## 🛠️ 4. Critical Fix: Resolution of 504 Gateway Timeout
-During the initial deployment, a **504 Gateway Timeout** was encountered.
+## 🛠️ 4. Deployment Challenges & Resolutions
 
-### Root Cause Analysis (RCA)
-- **Problem**: The deployment bundle sent to AWS was missing the application JAR file.
-- **Cause**: The project's `.gitignore` was configured to ignore the `target/` directory. The Elastic Beanstalk CLI (`eb deploy`) respects `.gitignore` by default, resulting in an empty deployment.
-- **Impact**: The Docker container on AWS could not find the `app.jar`, failing to start service on port `8080`. Nginx timed out waiting for the backend.
+### 4.1. 504 Gateway Timeout (Initial Release)
+- **Problem**: The AWS Docker container failed to start because the application JAR was missing.
+- **Root Cause**: The `.gitignore` was excluding the `target/` directory, causing the `eb cli` to upload an empty payload.
+- **Solution**: Created an explicit `.ebignore` file to ensure the compiled JAR is always included in the AWS bundle.
 
-### Technical Solution
-- **Implementation**: Created a [`.ebignore`](file:///c:/Users/naidu/Downloads/ecommerce-api-spring-kafka-main/ecommerce-api-spring-kafka-main/.ebignore) file in the root directory.
-- **Function**: Explicitly **includes** `target/*.jar` while ignoring source code (`src/`), ensuring the deployment bundle remains lightweight but functional.
+### 4.2. "Yellow" Health & Timeout Errors (CI/CD)
+- **Problem**: The GitHub Actions deployment was timing out after 10 minutes, leaving instances in an invalid status.
+- **Solution**: Increased the deployment timeout to 15 minutes via `.ebextensions/deploy_timeout.config`. Additionally, the `.platform/nginx` configurations were correctly bundled in `deploy.yml` to prevent Nginx proxy drops.
+
+### 4.3. API Test Pipeline Failures (403 Forbidden & JSONError)
+- **Problem**: The automated Postman/Newman tests running in GitHub Actions were failing to fetch the correct live URL and were getting `403 Forbidden` errors on secured endpoints.
+- **Solution**: 
+    1. **Dynamic CNAME Fetching**: Created a "Smart Pipeline" step in `deploy.yml` that uses AWS CLI to dynamically query the live Elastic Beanstalk URL and passes it to the testing job. Built in the required `AWS_ACCESS_KEY_ID` credentials for this specific shell context.
+    2. **Token Extraction Fix**: Updated `automated_test_collection.json` to correctly parse `jsonData.accessToken` instead of `jsonData.token`, ensuring Bearer tokens are properly applied for Admin/Vendor requests.
 
 ---
 
 ## 🧪 5. Verification & Testing
-The system has been verified through multiple testing layers:
 
-### ✅ Automated "Happy Path" Execution
-Run the custom script `.\test-live-api.ps1` to verify the full business lifecycle:
-1.  **Identity**: Account creation and JWT generation.
-2.  **Catalog**: Product registration and inventory management.
-3.  **Transactions**: Idempotent checkout and order persistence.
+The system is fortified by an automated CI/CD pipeline (`.github/workflows/deploy.yml`) that guarantees quality on every push to `main`.
+
+### ✅ Automated "Smart" Deployment Pipeline
+1. **Build**: Compiles Java 17 code and packages the Spring Boot JAR.
+2. **Deploy**: Automatically pushes the new Docker bundle to Elastic Beanstalk.
+3. **Verify**: Dynamically extracts the AWS URL and runs the full `automated_test_collection.json` suite via Newman, verifying Identity, Catalog, and Transaction flows against the *live* production database.
+
+**Status**: The pipeline is currently **100% Green**.
 
 ### ✅ Manual Interaction
 The **Swagger UI** is fully integrated and accessible for team testing and demonstration.
 
 ---
 
-## 📖 6. Maintenance & Future Deployments
-To update the live code after local changes, use the optimized workflow:
+## 🔗 6. Quick Links for Team Lead Review
 
-1.  **Build**: `.\mvnw clean package -DskipTests`
-2.  **Deploy**: `eb deploy`
+*   🚀 **Live API Environment (Swagger)**: [Access Swagger UI](http://ecommerce-api-prod.eba-jshpsgpi.us-east-1.elasticbeanstalk.com/swagger-ui/index.html)
+*   📚 **Complete Architecture Manual**: [BACKEND_ARCHITECTURE.md](https://github.com/naidk/ecommerce-microservices-backend/blob/main/BACKEND_ARCHITECTURE.md)
+*   🟢 **Live CI/CD Pipeline Status**: [GitHub Actions Dashboard](https://github.com/naidk/ecommerce-microservices-backend/actions)
+*   💻 **Source Code Repository**: [naidk/ecommerce-microservices-backend](https://github.com/naidk/ecommerce-microservices-backend)
 
 ---
-**Report generated for Naidu Gudivada's Team.**
-*Spring Boot Backend — Healthy and Scalable.*
+**Prepared for Team Lead Review.**
+*E-commerce Spring Boot Backend — Automated, Resilient, and Ready for Scale.*
